@@ -81,9 +81,9 @@ func (s *Server) ListenAndServe(leader string) error {
 	if leader != "" {
 		log.Println("Attempting to join leader:", leader)
 
-		// if !s.raftServer.IsLogEmpty() {
-		// log.Fatal("Cannot join with an existing log")
-		// }
+		if !s.raftServer.IsLogEmpty() {
+			log.Fatal("Cannot join with an existing log")
+		}
 		if err := s.Join(leader); err != nil {
 			log.Fatal(err)
 		}
