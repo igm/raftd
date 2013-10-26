@@ -8,7 +8,7 @@ This library provides a distributed consensus protocol based on the Raft protoco
 This protocol is based on Paxos but is architected to be more understandable.
 It is similar to other log-based distributed consensus systems such as [Google's Chubby](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CDAQFjAA&url=http%3A%2F%2Fresearch.google.com%2Farchive%2Fchubby.html&ei=i9OGUerTJKbtiwLkiICoCQ&usg=AFQjCNEmFWlaB_iXQfEjMcMwPaYTphO6bA&sig2=u1vefM2ZOZu_ZVIZGynt1A&bvm=bv.45960087,d.cGE) or [Heroku's doozerd](https://github.com/ha/doozerd).
 
-This alternative ZMQ implementation is very simple. Raft messages (VoteReqeust, AppendEntriesRequest) communicated between nodes are sent using ZMQ messaging (REP/REQ) and a key/value database is accesible via HTTP with the following HTTP API:
+This alternative ZMQ implementation is very simple. Raft messages (VoteRequest, AppendEntriesRequest) communicated between nodes are sent using ZMQ messaging (REQ/REP) and a key/value database is accesible via HTTP with the following HTTP API:
 
 ```
 # Set the value of a key.
@@ -41,7 +41,7 @@ $ raftdzmq -p 5555 -hp 8080 ~/node.1
 ```
 
 To add nodes to the cluster, you'll need to start on a different port and use a different data diretory.
-You'll also need to specify the host/port of the leader of the cluster to join:
+You'll also need to specify the host/port of the leader of the cluster to join (join happens via http request to leader):
 
 ```sh
 $ raftdzmq -p 5556 -hp 8081 -join localhost:8080 ~/node.2
