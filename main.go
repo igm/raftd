@@ -2,20 +2,25 @@ package main
 
 import (
 	"flag"
-	"github.com/goraft/raftd/command"
-	"github.com/goraft/raftd/server"
-	"github.com/goraft/raft"
 	"log"
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/goraft/raft"
+	"github.com/igm/raftdzmq/command"
+	"github.com/igm/raftdzmq/server"
 )
 
 var verbose bool
 var trace bool
 var debug bool
+
+// zmq  host:port to bind socket to (tcp://host:port) -> raft messaging
+// http host:httpport to serve HTTP resquests (http://host:httpport) -> for clients
 var host string
 var port int
+var httpport int
 var join string
 
 func init() {
@@ -23,8 +28,9 @@ func init() {
 	flag.BoolVar(&trace, "trace", false, "Raft trace debugging")
 	flag.BoolVar(&debug, "debug", false, "Raft debugging")
 	flag.StringVar(&host, "h", "localhost", "hostname")
-	flag.IntVar(&port, "p", 4001, "port")
-	flag.StringVar(&join, "join", "", "host:port of leader to join")
+	flag.IntVar(&port, "p", 5555, "port")
+	flag.IntVar(&httpport, "hp", 8080, "http port")
+	flag.StringVar(&join, "join", "", "host:port of leader to join (http)")
 }
 
 func main() {
@@ -41,7 +47,7 @@ func main() {
 		log.Print("Raft debugging enabled.")
 	}
 
-    rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 
 	// Setup commands.
 	raft.RegisterCommand(&command.WriteCommand{})
@@ -56,6 +62,6 @@ func main() {
 	}
 
 	log.SetFlags(log.LstdFlags)
-	s := server.New(path, host, port)
+	s := server.New(path, host, port, httpport)
 	log.Fatal(s.ListenAndServe(join))
 }
